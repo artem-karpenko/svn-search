@@ -1,2 +1,2 @@
-svn-indexer
+svn-search
 ===========
