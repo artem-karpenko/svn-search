@@ -5,6 +5,8 @@ package ua.org.yozh
  */
 class Indexer(val repoUrl: String, username: String, password: String) {
   def index() {
-    println("Indexing repo " + repoUrl)
+    val repositoryTraversal = new RepositoryTraversal(repoUrl, username, password)
+    repositoryTraversal.addVisitor(new PrintingVisitor())
+    repositoryTraversal.traverse("")
   }
 }

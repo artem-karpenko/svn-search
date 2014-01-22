@@ -8,7 +8,7 @@ object RunIndex {
     val repoUrl = args(0)
 
     println("Indexing repositories...")
-    val indexer = new Indexer(repoUrl, "artem", "artem123")
+    val indexer = new Indexer(repoUrl, "artem", "oxseed")
     indexer.index()
   }
 }
