@@ -11,8 +11,10 @@ class PrintingVisitor extends SvnEntryVisitor {
 
   @Override
   def visit(path: String, entry: SVNDirEntry) {
-//    logger.info(entry.getRelativePath())
-//    logger.info(entry.getName)
     logger.info((if (path.equals("")) "" else path + "/") +  entry.getName)
+  }
+
+  def close() {
+
   }
 }

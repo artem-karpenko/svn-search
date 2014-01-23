@@ -33,6 +33,8 @@ class RepositoryTraversal(repoUrl: String, username: String, password: String) {
   val latestRevision = repository.getLatestRevision
   logger.info("HEAD revision is " + latestRevision)
 
+  visitors += new IndexingVisitor(repository)
+
   def addVisitor(visitor: SvnEntryVisitor) {
     visitors += visitor
   }
@@ -49,6 +51,12 @@ class RepositoryTraversal(repoUrl: String, username: String, password: String) {
       if (entry.getKind == SVNNodeKind.DIR) {
         traverse(if (path.equals("")) entry.getName else path + "/" + entry.getName)
       }
+    }
+  }
+
+  def close() {
+    for (visitor <- visitors) {
+      visitor.close()
     }
   }
 }
