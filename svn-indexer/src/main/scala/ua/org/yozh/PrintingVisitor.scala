@@ -10,11 +10,7 @@ class PrintingVisitor extends SvnEntryVisitor {
   val logger = LoggerFactory.getLogger(classOf[PrintingVisitor])
 
   @Override
-  def visit(path: String, entry: SVNDirEntry) {
+  def visit(path: String, entry: SVNDirEntry, revision: Long) {
     logger.info((if (path.equals("")) "" else path + "/") +  entry.getName)
-  }
-
-  def close() {
-
   }
 }

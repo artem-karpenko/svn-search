@@ -13,10 +13,9 @@ import java.util
 /**
  * @author artem
  */
-class RepositoryTraversal(repoUrl: String, username: String, password: String) {
+class RepositoryTraversal(repoUrl: String, username: String, password: String, indexer: TextIndexer,
+                           var revision: Long) {
   val logger = LoggerFactory.getLogger(classOf[RepositoryTraversal])
-
-  val visitors = scala.collection.mutable.ArrayBuffer[SvnEntryVisitor]()
 
   DAVRepositoryFactory.setup()
   SVNRepositoryFactoryImpl.setup()
@@ -30,33 +29,34 @@ class RepositoryTraversal(repoUrl: String, username: String, password: String) {
   else if (nodeKind == SVNNodeKind.FILE)
     throw new TraversalException(repoUrl, "File found when directory expected")
 
-  val latestRevision = repository.getLatestRevision
-  logger.info("HEAD revision is " + latestRevision)
+  if (revision == -1) {
+    revision = repository.getLatestRevision
+  }
 
-  visitors += new IndexingVisitor(repository)
+  val visitors = scala.collection.mutable.ArrayBuffer[SvnEntryVisitor]()
+  addVisitor(new IndexingVisitor(repository, indexer))
 
   def addVisitor(visitor: SvnEntryVisitor) {
     visitors += visitor
   }
 
-  def traverse(path: String) {
+  def traverse() {
+    logger.info("Indexing everything at revision " + revision)
+    traverse("")
+  }
+
+  private def traverse(path: String) {
     val children = new util.ArrayList[SVNDirEntry]()
-    repository.getDir(path, -1, false, children)
+    repository.getDir(path, revision, false, children)
     for (entry: SVNDirEntry <- children) {
 
       for (visitor <- visitors) {
-        visitor.visit(path, entry)
+        visitor.visit(path, entry, revision)
       }
 
       if (entry.getKind == SVNNodeKind.DIR) {
         traverse(if (path.equals("")) entry.getName else path + "/" + entry.getName)
       }
-    }
-  }
-
-  def close() {
-    for (visitor <- visitors) {
-      visitor.close()
     }
   }
 }

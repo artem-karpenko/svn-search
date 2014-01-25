@@ -6,6 +6,5 @@ import org.tmatesoft.svn.core.SVNDirEntry
  * @author artem
  */
 trait SvnEntryVisitor {
-  def visit(path: String, entry: SVNDirEntry)
-  def close()
+  def visit(path: String, entry: SVNDirEntry, revision: Long)
 }
